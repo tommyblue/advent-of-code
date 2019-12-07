@@ -1,6 +1,6 @@
 package main
 
 func main() {
-	a()
-	b()
+	a1()
+	b1()
 }
