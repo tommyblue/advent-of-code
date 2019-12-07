@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	"github.com/tommyblue/advent-of-code/2019/utils"
 )
 
 func a1() {
@@ -37,20 +39,13 @@ func b1() {
 	// Specifically, to find the fuel required for a module, take its mass,
 	// divide by three, round down, and subtract 2.
 	total := 0
-	f, err := os.Open("./inputs/1")
-	if err != nil {
-		panic(err)
-	}
-	r := bufio.NewReader(f)
+	r := utils.NewFileReader("./inputs/1")
 	for {
 		line, _, err := r.ReadLine()
 		if err != nil {
 			break
 		}
-		n, err := strconv.Atoi(string(line))
-		if err != nil {
-			panic(err)
-		}
+		n := utils.ToInt(string(line))
 		total += getFuel(n)
 	}
 	fmt.Println("1B:", total)
