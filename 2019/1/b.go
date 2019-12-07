@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func a() {
+func b() {
 	// Fuel required to launch a given module is based on its mass.
 	// Specifically, to find the fuel required for a module, take its mass,
 	// divide by three, round down, and subtract 2.
@@ -26,8 +26,17 @@ func a() {
 		if err != nil {
 			panic(err)
 		}
-		v := n / 3
-		total += v - 2
+		total += getFuel(n)
 	}
-	fmt.Println("A:", total)
+	fmt.Println("B:", total)
+}
+
+func getFuel(mass int) int {
+	fuel := (mass / 3) - 2
+	if fuel > 0 {
+		fuel += getFuel(fuel)
+	} else if fuel <= 0 {
+		return 0
+	}
+	return fuel
 }
