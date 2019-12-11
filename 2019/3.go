@@ -30,7 +30,27 @@ func a3() {
 	p := evaluateDistances(positions)
 	fmt.Println("3A:", p)
 }
-func b3() {}
+func b3() {
+	r := utils.NewFileReader("./inputs/3")
+	line1, _, err := r.ReadLine()
+	if err != nil {
+		panic(err)
+	}
+	path1 := strings.Split(string(line1), ",")
+	w1 := &wire{}
+	w1.run(path1)
+
+	line2, _, err := r.ReadLine()
+	if err != nil {
+		panic(err)
+	}
+	path2 := strings.Split(string(line2), ",")
+	w2 := &wire{}
+	w2.run(path2)
+
+	minSteps := findCommonPositionsWithSteps(w1, w2)
+	fmt.Println("3B:", minSteps)
+}
 
 func evaluateDistances(positions []string) int {
 	minDistance := 0
@@ -67,7 +87,22 @@ func calculateDistance(x, y int) int {
 }
 
 type wire struct {
-	positions map[string]string
+	positions map[string]int
+}
+
+func findCommonPositionsWithSteps(w1, w2 *wire) int {
+	minSteps := 0
+	for position, s1 := range w1.positions {
+		if s2, ok := w2.positions[position]; ok {
+			if minSteps == 0 {
+				minSteps = s1 + s2
+			}
+			if s1+s2 < minSteps {
+				minSteps = s1 + s2
+			}
+		}
+	}
+	return minSteps
 }
 
 func findCommonPositions(w1, w2 *wire) []string {
@@ -80,14 +115,15 @@ func findCommonPositions(w1, w2 *wire) []string {
 	return common
 }
 
-func (w *wire) add(x, y int) {
-	w.positions[fmt.Sprintf("%d:%d", x, y)] = "."
+func (w *wire) add(x, y, steps int) {
+	w.positions[fmt.Sprintf("%d:%d", x, y)] = steps
 }
 
 func (w *wire) run(path []string) {
-	w.positions = make(map[string]string)
+	w.positions = make(map[string]int)
 	currentX := 0
 	currentY := 0
+	steps := 0
 
 	for _, v := range path {
 		action := string(v[0])
@@ -99,22 +135,26 @@ func (w *wire) run(path []string) {
 		if action == "R" { // right
 			for i := 0; i < moveBy; i++ {
 				currentX++
-				w.add(currentX, currentY)
+				steps++
+				w.add(currentX, currentY, steps)
 			}
 		} else if action == "L" { // left
 			for i := 0; i < moveBy; i++ {
 				currentX--
-				w.add(currentX, currentY)
+				steps++
+				w.add(currentX, currentY, steps)
 			}
 		} else if action == "U" { //up
 			for i := 0; i < moveBy; i++ {
 				currentY++
-				w.add(currentX, currentY)
+				steps++
+				w.add(currentX, currentY, steps)
 			}
 		} else if action == "D" { //down
 			for i := 0; i < moveBy; i++ {
 				currentY--
-				w.add(currentX, currentY)
+				steps++
+				w.add(currentX, currentY, steps)
 			}
 		}
 	}
